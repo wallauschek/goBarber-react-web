@@ -1,4 +1,4 @@
-import { all, takeLatest, call, put } from "redux-saga/effects";
+import { all /* , takeLatest, call, put */ } from "redux-saga/effects";
 
 // import history from "~/services/history";
 // import api from "~/services/api";
