@@ -1,27 +1,28 @@
-import { all /* , takeLatest, call, put */ } from "redux-saga/effects";
+import { all, takeLatest, call, put } from "redux-saga/effects";
+import { toast } from "react-toastify";
 
-// import history from "~/services/history";
-// import api from "~/services/api";
-// import { signInSuccess } from "./actions";
+import api from "~/services/api";
 
-// export function* signIn({ payload }) {
-//   const { email, password } = payload;
+import { updateProfileSuccess, updateProfileFailure } from "./actions";
 
-//   const response = yield call(api.post, "sessions", {
-//     email,
-//     password
-//   });
+export function* updateProfile({ payload }) {
+  try {
+    const { name, email, ...rest } = payload.data;
 
-//   const { token, user } = response.data;
+    const profile = Object.assign(
+      { name, email },
+      rest.oldPassword ? rest : {}
+    );
 
-//   if (!user.provider) {
-//     console.tron.error("Usuário não pe prestador");
-//     return;
-//   }
+    const response = yield call(api.put, "users", profile);
 
-//   yield put(signInSuccess(token, user));
+    toast.success("Perfil atualizado com sucesso!");
 
-//   history.push("/dashboard");
-// }
+    yield put(updateProfileSuccess(response.data));
+  } catch (err) {
+    toast.error("Erro ao atualizar perfil, confira seus dados");
+    yield put(updateProfileFailure());
+  }
+}
 
-export default all([]);
+export default all([takeLatest("@user/UPDATE_PROFILE_REQUEST", updateProfile)]);
