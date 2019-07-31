@@ -23,19 +23,25 @@ export default function Dashboard() {
   const [schedule, setSchedule] = useState([]);
   const [date, setDate] = useState(new Date());
 
+  const dateFormatted = useMemo(
+    () => format(date, "d 'de' MMMM", { locale: pt }),
+    [date]
+  );
+
   useEffect(() => {
     async function loadSchedule() {
-      const response = await api.get("schedule", {
+      const response = await api.get("schendule", {
         params: { date }
       });
 
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
       const data = range.map(hour => {
         const checkDate = setSeconds(setMinutes(setHours(date, hour), 0), 0);
         const compareDate = utcToZonedTime(checkDate, timezone);
 
         return {
-          time: `${hour}:00h`,
+          time: `${hour}:00`,
           past: isBefore(compareDate, new Date()),
           appointment: response.data.find(a =>
             isEqual(parseISO(a.date), compareDate)
@@ -45,14 +51,8 @@ export default function Dashboard() {
 
       setSchedule(data);
     }
-
     loadSchedule();
   }, [date]);
-
-  const dateFormatted = useMemo(
-    () => format(date, "d 'de' MMMM", { locale: pt }),
-    [date]
-  );
 
   function handlePrevDay() {
     setDate(subDays(date, 1));
@@ -66,11 +66,11 @@ export default function Dashboard() {
     <Container>
       <header>
         <button type="button" onClick={handlePrevDay}>
-          <MdChevronLeft size={36} color="#fff" />
+          <MdChevronLeft size={36} color="#FFF" />
         </button>
         <strong>{dateFormatted}</strong>
         <button type="button" onClick={handleNextDay}>
-          <MdChevronRight size={36} color="#fff" />
+          <MdChevronRight size={36} color="#FFF" />
         </button>
       </header>
 
